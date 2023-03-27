@@ -18,7 +18,7 @@ public class ConsoleManager : SingletonMonoBehaviour<ConsoleManager>
 
     [Header("Target")]
     [SerializeField] private DeviceDataEvent _onTargetChanged;
-    [field: SerializeField] public DeviceData SelectedTarget { get; private set; }
+    public DeviceData SelectedTarget { get; private set; }
 
 
     public IReadOnlyCollection<Program> ProgramList => _programList;

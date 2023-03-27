@@ -24,7 +24,12 @@ public class ConsoleActionsUI : MonoBehaviour
 
     private void UpdateTargetInfo(DeviceData target)
     {
-        _targetIPAddress.text = target.IPAddress;
-        _targetDeviceName.text = target.Name;
+        _targetIPAddress.text = target?.IPAddress ?? "";
+        _targetDeviceName.text = target?.Name ?? "";
+        if (target == null) _targetDeviceIcon.enabled = false;
+        else
+        {
+
+        }
     }
 }

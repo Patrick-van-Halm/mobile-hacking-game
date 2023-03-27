@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6305264ebb41ca1449ad8169079f36d2, type: 3}
+  m_Name: JobMarket
+  m_EditorClassIdentifier: 
+  <WebpageName>k__BackingField: Hack4Hire
+  <Link>k__BackingField: 1kN7rTf5Gp8WvzJL3dE7aBc9Xh2Ys6Qm0o4IuRt.onion
+  <MinReputation>k__BackingField: 0
+  <PagePrefab>k__BackingField: {fileID: 8060191717963881014, guid: 40ab231548d7c824da062f5d8e28ea1e, type: 3}

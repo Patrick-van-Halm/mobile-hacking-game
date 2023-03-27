@@ -10,8 +10,6 @@ public class JobUI : MonoBehaviour
     [SerializeField] private RectTransform _jobOfferHolder;
     [SerializeField] private TMP_Text _moneyText;
 
-    [SerializeField] private JobInfoUI _jobInfoUI;
-
     [SerializeField] private JobDataEvent _onJobCreated;
     [SerializeField] private JobDataEvent _onJobRemoved;
     [SerializeField] private IntEvent _onMoneyChanged;
@@ -42,14 +40,15 @@ public class JobUI : MonoBehaviour
 
     public void ViewJob(JobData job)
     {
-        _jobInfoUI.Initialize(job);
-        OverlayManager.Instance.ShowJobInfo();
+        OverlayManager.Instance.ShowJobInfo(job);
     }
 
     private void OnEnable()
     {
         for(int i = _jobOfferHolder.childCount - 1; i >= 0; i--)
         {
+            var child = _jobOfferHolder.GetChild(i);
+            if (!child.GetComponent<JobOfferUI>()) continue;
             Destroy(_jobOfferHolder.GetChild(i).gameObject);
         }
 

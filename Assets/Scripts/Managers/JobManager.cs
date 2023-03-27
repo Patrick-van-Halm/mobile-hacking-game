@@ -11,9 +11,10 @@ public class JobManager : SingletonMonoBehaviour<JobManager>
 
     [SerializeField] private List<JobData> _acceptedJobs = new();
 
-    private void Start()
+    private IEnumerator Start()
     {
 #if UNITY_EDITOR
+        yield return null;
         var job = new GatherCredentialsJobData()
         {
             CoinReward = 200,

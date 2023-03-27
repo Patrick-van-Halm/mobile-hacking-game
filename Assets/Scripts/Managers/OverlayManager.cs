@@ -14,8 +14,9 @@ public class OverlayManager : SingletonMonoBehaviour<OverlayManager>
         _overlay.SetActive(shown);
     }
 
-    public void ShowJobInfo()
+    public void ShowJobInfo(JobData job)
     {
+        _jobInfoOverlay.GetComponent<JobInfoUI>().Initialize(job);
         _activeOverlay = _jobInfoOverlay;
         ShowOverlay(true);
     }
