@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,12 +17,24 @@ public class DeviceData
 		return String.Join(".", ipChunks);
 	}
 
+	[field: SerializeField] public string Id { get; private set; }
 	[field: SerializeField] public string IPAddress { get; private set; }
 	[field: SerializeField] public string Name { get; private set; }
     [SerializeField] private List<PortData> _ports = new();
 	[SerializeField] private List<DeviceUserData> _users = new();
 	public IReadOnlyCollection<PortData> Ports => _ports;
 	public IReadOnlyCollection<DeviceUserData> Users => _users;
+	[SerializeField] private JObject _files;
+
+	public DeviceData(string id, string ip, string name, JObject files, List<DeviceUserData> users, List<PortData> ports)
+	{
+		Id = id;
+		IPAddress = ip;
+		Name = name;
+		_users = users;
+		_ports = ports;
+		_files = files;
+	}
 
     public DeviceData(string ipAddress)
 	{

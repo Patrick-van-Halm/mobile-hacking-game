@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6305264ebb41ca1449ad8169079f36d2, type: 3}
+  m_Name: FluxMail
+  m_EditorClassIdentifier: 
+  <WebpageName>k__BackingField: FluxMail
+  <Link>k__BackingField: 7LdNk6fPm0vKzIu9tXcHx2jAe4gQb1sRw3yS8rT.onion
+  <PagePrefab>k__BackingField: {fileID: 8132710586423624484, guid: 9cc4e159898d5e44e8c7e9f71db6cb8c, type: 3}

@@ -1,103 +1,76 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 public class JobManager : SingletonMonoBehaviour<JobManager>
 {
+    [SerializeField] private string ApiPath;
     [SerializeField] private JobDataEvent _onJobCreated;
+    [SerializeField] private EmptyEvent _onJobListingChanged;
 
-    [SerializeField] private List<JobData> _jobs = new();
-    public IReadOnlyCollection<JobData> Jobs => _jobs;
+    [SerializeField] private List<JobData> _availableJobs = new();
+    public IReadOnlyCollection<JobData> Jobs => _availableJobs;
 
     [SerializeField] private List<JobData> _acceptedJobs = new();
 
     private IEnumerator Start()
     {
-#if UNITY_EDITOR
-        yield return null;
-        var job = new GatherCredentialsJobData()
+        using UnityWebRequest request = UnityWebRequest.Get($"{Env.Instance.ApiUrl}{ApiPath}");
+        request.SetRequestHeader("Authorization", $"Bearer {Env.Instance.AuthKey}");
+        yield return request.SendWebRequest();
+        if(request.responseCode != 200) yield break;
+        var jobs = JsonConvert.DeserializeObject<List<GetJobDTO>>(request.downloadHandler.text, new JsonSerializerSettings
         {
-            CoinReward = 200,
-            ContactPerson = "John",
-            IsBlackHatActivity = true,
-            MinReputation = 0,
-            TargetDevice = DeviceManager.Instance.Devices.Random()
-        };
-        _jobs.Add(job);
-        _onJobCreated.Invoke(job);
-
-        var device = DeviceManager.Instance.Devices.Random();
-        job = new GatherSpecificCredentialsJobData()
+            DateTimeZoneHandling = DateTimeZoneHandling.Local,
+        });
+        if(jobs == null) yield break;
+        foreach(GetJobDTO j in jobs)
         {
-            CoinReward = 200,
-            ContactPerson = "John",
-            IsBlackHatActivity = false,
-            MinReputation = 0,
-            TargetDevice = device,
-            TargetUser = device.Users.Random()
-        };
-        _jobs.Add(job);
-        _onJobCreated.Invoke(job);
-
-        job = new GatherCredentialsJobData()
-        {
-            CoinReward = 200,
-            ContactPerson = "John",
-            IsBlackHatActivity = false,
-            MinReputation = 0,
-            TargetDevice = DeviceManager.Instance.Devices.Random()
-        };
-        _jobs.Add(job);
-        _onJobCreated.Invoke(job);
-
-        device = DeviceManager.Instance.Devices.Random();
-        job = new GatherSpecificCredentialsJobData()
-        {
-            CoinReward = 200,
-            ContactPerson = "John",
-            IsBlackHatActivity = true,
-            MinReputation = 0,
-            TargetDevice = device,
-            TargetUser = device.Users.Random()
-        };
-        _jobs.Add(job);
-        _onJobCreated.Invoke(job);
-
-        job = new GatherCredentialsJobData()
-        {
-            CoinReward = 200,
-            ContactPerson = "John",
-            IsBlackHatActivity = true,
-            MinReputation = 0,
-            TargetDevice = DeviceManager.Instance.Devices.Random()
-        };
-        _jobs.Add(job);
-        _onJobCreated.Invoke(job);
-
-        device = DeviceManager.Instance.Devices.Random();
-        job = new GatherSpecificCredentialsJobData()
-        {
-            CoinReward = 200,
-            ContactPerson = "John",
-            IsBlackHatActivity = false,
-            MinReputation = 0,
-            TargetDevice = device,
-            TargetUser = device.Users.Random()
-        };
-        _jobs.Add(job);
-        _onJobCreated.Invoke(job);
-#endif
+            JobData data = j.ToJobData();
+            if (data == null) continue;
+            if (j.PerformingPlayerId == Env.Instance.PlayerId) _acceptedJobs.Add(data);
+            else _availableJobs.Add(data);
+        }
     }
 
     public void AcceptJob(JobData job)
     {
-        _jobs.Remove(job);
+        _availableJobs.Remove(job);
+        StartCoroutine(CoroAcceptJob(job));
+        _onJobListingChanged?.Invoke();
+    }
+
+    private IEnumerator CoroAcceptJob(JobData job)
+    {
+        JObject changes = new();
+        changes.Add("performing_player_id", Env.Instance.PlayerId);
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(changes));
+
+        using UnityWebRequest request = UnityWebRequest.Put($"{Env.Instance.ApiUrl}{ApiPath}/{job.Id}", bytes);
+        request.method = "PATCH";
+        request.SetRequestHeader("content-type", "application/json; charset=UTF-8");
+        request.SetRequestHeader("Authorization", $"Bearer {Env.Instance.AuthKey}");
+        yield return request.SendWebRequest();
+
+        if (request.responseCode != 200)
+        {
+            _availableJobs.Add(job);
+            _onJobListingChanged?.Invoke();
+            yield break;
+        }
         _acceptedJobs.Add(job);
+        _onJobListingChanged?.Invoke();
     }
 
     public void CancelJob(JobData job)
     {
         _acceptedJobs.Remove(job);
-        _jobs.Add(job);
+        _availableJobs.Add(job);
+        _onJobListingChanged?.Invoke();
     }
 }

@@ -12,11 +12,6 @@ public class JobInfoUI : MonoBehaviour
     [SerializeField] private TMP_Text _jobContact;
     [SerializeField] private TMP_Text _jobCoinReward;
     [SerializeField] private TMP_Text _jobRepReward;
-    [SerializeField] private Button _jobAcceptBtn;
-    [SerializeField] private Image _jobHatImg;
-    [SerializeField] private Sprite _blackHatSprite;
-    [SerializeField] private Sprite _whiteHatSprite;
-
     private JobData _job;
 
     public void Initialize(JobData job)
@@ -27,13 +22,11 @@ public class JobInfoUI : MonoBehaviour
         _jobDescription.text = job.GetDescription();
         _jobContact.text = $"Contact: {job.ContactPerson}";
         _jobCoinReward.text = job.CoinReward.ToString();
-
-        if (job.IsBlackHatActivity) _jobHatImg.sprite = _blackHatSprite;
-        else _jobHatImg.sprite = _whiteHatSprite;
     }
 
     public void AcceptJob()
     {
+        // Todo: check if client can take job based of reputation
         _job.JobTaken();
     }
 }

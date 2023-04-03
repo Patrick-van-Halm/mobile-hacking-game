@@ -9,6 +9,7 @@ public abstract class GenericBaseEvent<T> : ScriptableObject
 
     public virtual void Invoke(T T1)
     {
+        Debug.Log($"Invoking: {name}");
         foreach (GenericBaseEventListener<T>.Listener listener in _listeners) listener.Invoke(T1);
         OnEvent.Invoke(T1);
     }
@@ -31,6 +32,7 @@ public abstract class GenericBaseEvent<T1, T2> : ScriptableObject
 
     public virtual void Invoke(T1 T1, T2 T2)
     {
+        Debug.Log($"Invoking: {name}");
         foreach (GenericBaseEventListener<T1, T2>.Listener listener in _listeners) listener.Invoke(T1, T2);
         OnEvent.Invoke(T1, T2);
     }

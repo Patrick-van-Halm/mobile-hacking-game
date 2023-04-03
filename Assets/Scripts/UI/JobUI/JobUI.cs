@@ -9,7 +9,9 @@ public class JobUI : MonoBehaviour
     [SerializeField] private GameObject _jobOfferPrefab;
     [SerializeField] private RectTransform _jobOfferHolder;
     [SerializeField] private TMP_Text _moneyText;
+    [SerializeField] private TMP_Text _reputationText;
 
+    [SerializeField] private EmptyEvent _onJobListingChanged;
     [SerializeField] private JobDataEvent _onJobCreated;
     [SerializeField] private JobDataEvent _onJobRemoved;
     [SerializeField] private IntEvent _onMoneyChanged;
@@ -18,6 +20,7 @@ public class JobUI : MonoBehaviour
     {
         _onJobCreated.OnEvent.AddListener(OnJobCreated);
         _onJobRemoved.OnEvent.AddListener(OnJobRemoved);
+        _onJobListingChanged.OnEvent.AddListener(RefreshJobListing);
         _onMoneyChanged.OnEvent.AddListener(OnMoneyChanged);
     }
 
@@ -28,6 +31,7 @@ public class JobUI : MonoBehaviour
 
     private void OnJobRemoved(JobData job)
     {
+        RefreshJobListing();
         throw new NotImplementedException();
     }
 
@@ -45,7 +49,13 @@ public class JobUI : MonoBehaviour
 
     private void OnEnable()
     {
-        for(int i = _jobOfferHolder.childCount - 1; i >= 0; i--)
+        RefreshJobListing();
+        _moneyText.text = MoneyManager.Instance.Money.ToString();
+    }
+
+    private void RefreshJobListing()
+    {
+        for (int i = _jobOfferHolder.childCount - 1; i >= 0; i--)
         {
             var child = _jobOfferHolder.GetChild(i);
             if (!child.GetComponent<JobOfferUI>()) continue;
@@ -53,6 +63,5 @@ public class JobUI : MonoBehaviour
         }
 
         foreach (var job in JobManager.Instance.Jobs) OnJobCreated(job);
-        _moneyText.text = MoneyManager.Instance.Money.ToString();
     }
 }

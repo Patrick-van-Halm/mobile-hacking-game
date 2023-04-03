@@ -9,6 +9,7 @@ public abstract class BaseEvent : ScriptableObject
 
     public void Invoke()
     {
+        Debug.Log($"Invoking: {name}");
         foreach (BaseEventListener.Listener listener in _listeners) listener.Invoke();
         OnEvent.Invoke();
     }

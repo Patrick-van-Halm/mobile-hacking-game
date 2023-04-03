@@ -1,11 +1,20 @@
+using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class GatherCredentialsJobData : JobData
 {
-    public DeviceData TargetDevice;
+    [field: SerializeField] public string TargetDeviceId { get; protected set; }
+
     protected bool completed = false;
+
+    public GatherCredentialsJobData(string id, Person contactPerson, int minFactionReputation, int reward, int minLevel, bool completed, DateTime deadline, string targetDeviceId) : base(id, contactPerson, minFactionReputation, reward, minLevel, completed, deadline)
+    {
+        TargetDeviceId = targetDeviceId;
+    }
 
     public override bool Validate()
     {
@@ -15,15 +24,18 @@ public class GatherCredentialsJobData : JobData
     public void PasswordsDecrypted(DeviceData device)
     {
         if (device == null) return;
-        if (device != TargetDevice) return;
+        if (device.Id != TargetDeviceId) return;
         completed = true;
     }
 
     public virtual void SocialEngineeringPasswordGained(DeviceUserData user)
     {
         if (user == null) return;
-        if (!TargetDevice.Users.Contains(user)) return;
-        completed = true;
+        DeviceManager.Instance.GetDevice(TargetDeviceId, data =>
+        {
+            if (!data.Users.Contains(user)) return;
+            completed = true;
+        });
     }
 
     public override string GetTitle()
@@ -34,5 +46,10 @@ public class GatherCredentialsJobData : JobData
     public override string GetDescription()
     {
         return "Gather any kind of user credentials on a target device.";
+    }
+
+    public class APIData
+    {
+        [JsonProperty("target_device")] public string TargetDevice;
     }
 }
